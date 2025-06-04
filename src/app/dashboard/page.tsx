@@ -32,8 +32,7 @@ export default function Dashboard() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
-          },
-          credentials: 'include'
+          }
         });
 
         if (!response.ok) {

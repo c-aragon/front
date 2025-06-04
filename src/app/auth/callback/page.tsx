@@ -34,7 +34,6 @@ function CallbackContent() {
             state,
             redirect_uri: process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI
           }),
-          credentials: 'include',
         });
 
         if (!response.ok) {

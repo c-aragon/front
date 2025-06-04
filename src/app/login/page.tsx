@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './login.module.css';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,13 +19,12 @@ export default function LoginPage() {
 
     try {
       console.log('Enviando petición al backend...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
       });
 
       console.log('Respuesta recibida:', response.status);
@@ -47,23 +47,12 @@ export default function LoginPage() {
       localStorage.setItem('token', data.token);
       
       console.log('Redirigiendo al dashboard...');
-      // Forzar la redirección usando el router
-      await Promise.resolve(); // Asegurar que el token se guarde
-      router.refresh(); // Refrescar el router
+      router.refresh();
       router.push('/dashboard');
     } catch (err) {
       console.error('Error en el login:', err);
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     }
-  };
-
-  const handleOAuthLogin = () => {
-    console.log('Iniciando OAuth...');
-
-    const clientId = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID;
-    const redirectUri = process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI;
-    const oauthUrl = `http://localhost:3001/auth/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid profile email`;
-    window.location.href = oauthUrl;
   };
 
   const handleGoogleLogin = () => {
@@ -124,9 +113,6 @@ export default function LoginPage() {
           </button>
         </form>
         <div className={styles.divider}>o</div>
-        <button onClick={handleOAuthLogin} className={styles.oauthButton}>
-          Continuar con OAuth
-        </button>
         <div className={styles.oauthContainer}>
           <button onClick={handleGoogleLogin} className={styles.googleButton}>
             <Image 
@@ -136,6 +122,9 @@ export default function LoginPage() {
             />
             Continuar con Google
           </button>
+          <Link href="/register" className={styles.oauthButton}>
+            Registrarse
+          </Link>
         </div>
       </div>
     </div>
