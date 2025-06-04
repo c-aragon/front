@@ -9,6 +9,7 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -25,7 +26,7 @@ function VerifyEmailContent() {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pre-enrollment/verify-email?token=` + token , {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pre-enrollment/verify-email?token=` + token, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -33,11 +34,11 @@ function VerifyEmailContent() {
         });
 
         const data = await response.json();
-
         console.log(data);
 
         if (response.ok) {
           setIsValid(true);
+          setEmail(data.email);
           setMessage({ text: 'Email verificado correctamente', type: 'success' });
         } else {
           setMessage({ text: 'Token inválido o expirado', type: 'error' });
@@ -79,8 +80,8 @@ function VerifyEmailContent() {
     }
 
     const token = searchParams.get('token');
-    if (!token) {
-      setMessage({ text: 'Token no válido', type: 'error' });
+    if (!token || !email) {
+      setMessage({ text: 'Token o email no válido', type: 'error' });
       return;
     }
 
@@ -93,7 +94,7 @@ function VerifyEmailContent() {
         body: JSON.stringify({ 
           password,
           userType: 1,
-          email: "a.lpz.prz@gmail.com",
+          email
         }),
       });
 
